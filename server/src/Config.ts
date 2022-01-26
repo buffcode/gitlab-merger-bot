@@ -1,6 +1,32 @@
-import * as env from 'env-var';
+import { from, ExtensionFn } from 'env-var';
 
-export const defaultConfig = {
+const asSquashOption: ExtensionFn<'auto' | boolean> = (value) => {
+	if (String(value).toLowerCase() === 'auto') {
+		return 'auto';
+	}
+
+	return env.accessors.asBoolStrict(value);
+};
+
+const env = from(process.env, {
+	asSquashOption,
+});
+
+export const defaultConfig: {
+	GITLAB_URL: string;
+	GITLAB_AUTH_TOKEN: string;
+	CI_CHECK_INTERVAL: number;
+	MR_CHECK_INTERVAL: number;
+	REMOVE_BRANCH_AFTER_MERGE: boolean;
+	SQUASH_MERGE_REQUEST: 'auto' | boolean;
+	AUTORUN_MANUAL_BLOCKING_JOBS: boolean;
+	SKIP_SQUASHING_LABEL: string;
+	HIGH_PRIORITY_LABEL: string;
+	HTTP_SERVER_ENABLE: boolean;
+	HTTP_SERVER_PORT: number;
+	WEB_HOOK_TOKEN: string;
+	DRY_RUN: boolean;
+} = {
 	GITLAB_URL: 'https://gitlab.com',
 	GITLAB_AUTH_TOKEN: '',
 	CI_CHECK_INTERVAL: 5,
@@ -32,7 +58,7 @@ export const getConfig = (): Config => ({
 	SQUASH_MERGE_REQUEST: env
 		.get('SQUASH_MERGE_REQUEST')
 		.default(`${defaultConfig.SQUASH_MERGE_REQUEST}`)
-		.asBoolStrict(),
+		.asSquashOption(),
 	AUTORUN_MANUAL_BLOCKING_JOBS: env
 		.get('AUTORUN_MANUAL_BLOCKING_JOBS')
 		.default(`${defaultConfig.AUTORUN_MANUAL_BLOCKING_JOBS}`)

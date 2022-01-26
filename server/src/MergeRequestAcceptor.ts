@@ -342,7 +342,7 @@ export const acceptMergeRequest = async (
 	const useSquash = mergeRequestInfo.labels.includes(config.SKIP_SQUASHING_LABEL)
 		? false
 		: config.SQUASH_MERGE_REQUEST;
-	if (mergeRequestInfo.squash && !useSquash) {
+	if (mergeRequestInfo.squash && useSquash === false) {
 		// Because usage `squash=false` during accept MR has no effect and it just uses squash setting from the MR
 		await gitlabApi.updateMergeRequest(mergeRequestInfo.project_id, mergeRequestInfo.iid, {
 			squash: false,
@@ -363,9 +363,9 @@ export const acceptMergeRequest = async (
 		{
 			should_remove_source_branch: config.REMOVE_BRANCH_AFTER_MERGE,
 			sha: mergeRequestInfo.diff_refs.head_sha,
-			squash: useSquash,
 			squash_commit_message: `${mergeRequestInfo.title} (!${mergeRequestInfo.iid})`,
 			merge_commit_message: `${mergeRequestInfo.title} (!${mergeRequestInfo.iid})`,
+			...(useSquash === true ? { squash: true } : {}),
 		},
 	);
 

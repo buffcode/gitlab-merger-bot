@@ -24,7 +24,7 @@ jobs:
           CR_TOKEN: "${{ secrets.CR_TOKEN }}"
 
       - name: Publish to Registry
-        uses: elgohr/Publish-Docker-Github-Action@master
+        uses: elgohr/Publish-Docker-Github-Action@v5
         with:
           name: pepakriz/gitlab-merger-bot
           username: ${{ secrets.DOCKER_USERNAME }}
